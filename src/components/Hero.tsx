@@ -8,9 +8,9 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto flex max-w-6xl flex-col items-center px-6 py-24 text-center md:py-36">
-        <span className="mb-6 rounded-full border border-gold/40 px-4 py-1 text-xs font-medium uppercase tracking-widest text-gold">
+        {/* <span className="mb-6 rounded-full border border-gold/40 px-4 py-1 text-xs font-medium uppercase tracking-widest text-gold">
           Digital Skills Academy
-        </span>
+        </span> */}
 
         <h1 className="max-w-3xl text-4xl font-bold leading-tight text-cream sm:text-5xl md:text-6xl">
           Ready to Start Your<span className="text-gold"> Journey?</span>

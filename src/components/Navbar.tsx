@@ -28,7 +28,7 @@ export default function Navbar() {
             priority
           />
           <span className="text-lg font-semibold tracking-wide text-cream">
-            Goldfield Digital <span className="text-gold">Academy</span>
+            Goldfield <span className="text-gold"> Digital </span> Academy
           </span>
         </Link>
 

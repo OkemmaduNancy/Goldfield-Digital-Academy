@@ -23,9 +23,9 @@ export const contactItems: ContactItem[] = [
   },
   {
     label: "Email",
-    value: "Email address coming soon",
+    value: "@goldfieldgroups.com",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=info@goldfieldgroups.com",
     icon: "✉️",
-    isPlaceholder: true,
   },
   {
     label: "TikTok",
