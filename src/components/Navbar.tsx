@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 const links = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/#home" },
+  { label: "About", href: "/#about" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Reviews", href: "/#reviews" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -19,7 +19,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 border-b border-gold/20 bg-ink/95 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
         {/* Logo */}
-        <Link href="#home" className="flex items-center gap-3">
+        <Link href="/#home" className="flex items-center gap-3">
           <Image
             src="/logo.png"
             alt="Goldfield Academy logo"
@@ -46,7 +46,7 @@ export default function Navbar() {
           ))}
           <li>
             <a
-              href="#join"
+              href="/join"
               className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink transition hover:bg-gold-dark"
             >
               Join Now

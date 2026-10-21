@@ -7,10 +7,10 @@ export default function Hero() {
         className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-gold/10 blur-3xl"
       />
 
-      <div className="relative mx-auto flex max-w-6xl flex-col items-center px-6 py-24 text-center md:py-36">
-        {/* <span className="mb-6 rounded-full border border-gold/40 px-4 py-1 text-xs font-medium uppercase tracking-widest text-gold">
+      <div data-scroll-reveal className="relative mx-auto flex max-w-6xl flex-col items-center px-6 py-24 text-center md:py-36">
+        <span className="mb-6 rounded-full border border-gold/40 px-4 py-1 text-xs font-medium uppercase tracking-widest text-gold">
           Digital Skills Academy
-        </span> */}
+        </span>
 
         <h1 className="max-w-3xl text-4xl font-bold leading-tight text-cream sm:text-5xl md:text-6xl">
           Ready to Start Your<span className="text-gold"> Journey?</span>
@@ -25,13 +25,13 @@ export default function Hero() {
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <a
-            href="#join"
+            href="/join"
             className="rounded-full bg-gold px-8 py-3 text-center font-semibold text-ink transition hover:bg-gold-dark"
           >
             Join Now
           </a>
           <a
-            href="#skills"
+            href="/#skills"
             className="rounded-full border border-gold/50 px-8 py-3 text-center font-semibold text-gold transition hover:bg-gold/10"
           >
             Explore Skills

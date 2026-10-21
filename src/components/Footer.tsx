@@ -3,11 +3,11 @@ import Link from "next/link";
 import { contactItems } from "@/data/contacts";
 
 const quickLinks = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/home" },
+  { label: "About", href: "/about" },
+  { label: "Skills", href: "/skills" },
+  { label: "Reviews", href: "/reviews" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Footer() {
@@ -19,7 +19,7 @@ export default function Footer() {
     <footer className="border-t border-gold/30 bg-ink">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3">
         {/* Brand */}
-        <div>
+        <div data-scroll-reveal>
           <Link href="#home" className="flex items-center gap-3">
             <Image
               src="/logo.png"
@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
 
         {/* Quick links */}
-        <div>
+        <div data-scroll-reveal>
           <h3 className="text-sm font-semibold uppercase tracking-widest text-gold">
             Quick Links
           </h3>
@@ -54,7 +54,7 @@ export default function Footer() {
             ))}
             <li>
               <a
-                href="#join"
+                href="/join"
                 className="text-sm font-semibold text-gold transition-colors hover:text-gold-dark hover:underline focus-visible:text-gold-dark"
               >
                 Join Now
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         {/* Contact */}
-        <div>
+        <div data-scroll-reveal>
           <h3 className="text-sm font-semibold uppercase tracking-widest text-gold">
             Get in Touch
           </h3>
@@ -85,7 +85,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-gold/30 px-6 py-5 text-center text-xs text-cream/50">
+      <div data-scroll-reveal className="border-t border-gold/30 px-6 py-5 text-center text-xs text-cream/50">
         © {new Date().getFullYear()} Goldfield Academy. All rights reserved.
       </div>
     </footer>

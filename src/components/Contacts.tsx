@@ -10,11 +10,11 @@ export default function Contact() {
     >
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
+          <div data-scroll-reveal>
             <img src={Student.src} alt="Student" className="rounded-2xl" />
           </div>
           {/* Left: details */}
-          <div>
+          <div data-scroll-reveal>
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">
               Contact Us
             </p>

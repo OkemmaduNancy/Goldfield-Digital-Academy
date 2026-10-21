@@ -20,7 +20,7 @@ export default function About() {
   return (
     <section id="about" className="bg-cream py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
+        <div data-scroll-reveal className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-gold-dark">
             About Us
           </p>
@@ -35,7 +35,7 @@ export default function About() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div data-scroll-reveal className="mt-14 grid gap-6 md:grid-cols-3">
           {highlights.map((item) => (
             <div
               key={item.title}

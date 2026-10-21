@@ -21,7 +21,7 @@ export default function Reviews() {
   return (
     <section id="reviews" className="bg-cream py-20 md:py-28">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
+        <div data-scroll-reveal className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-gold-dark">
             Student Reviews
           </p>
@@ -31,6 +31,7 @@ export default function Reviews() {
         </div>
 
         <div
+          data-scroll-reveal
           className="mt-4"
           role="region"
           aria-roledescription="carousel"
