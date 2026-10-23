@@ -63,7 +63,7 @@ export default function RegistrationForm() {
   }, []);
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -93,7 +93,7 @@ export default function RegistrationForm() {
       if (!res.ok || !data?.authorizationUrl) {
         if (data?.errors) setErrors(data.errors);
         setSubmitError(
-          data?.error ?? "Something went wrong. Please try again.",
+          data?.error ?? "Something went wrong. Please try again."
         );
         setSubmitting(false);
         return;
@@ -153,14 +153,14 @@ export default function RegistrationForm() {
           aria-describedby={errors.skill ? "skill-error" : undefined}
           className={inputClass(Boolean(errors.skill))}
         >
-          <option value="" className="bg-page text-fg">
+          <option value="" className="bg-page text-black text-xl font-bold">
             Choose a skill
           </option>
           {skills.map((skill) => (
             <option
               key={skill.name}
               value={skill.name}
-              className="bg-page text-fg"
+              className="bg-page text-black"
             >
               {skill.name}
             </option>
