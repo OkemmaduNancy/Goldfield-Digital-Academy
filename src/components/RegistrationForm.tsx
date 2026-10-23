@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { skills } from "@/data/skills";
 import { REGISTRATION_FEE, formatNaira } from "@/lib/pricing";
 import {
@@ -50,7 +50,17 @@ function Field({
 export default function RegistrationForm() {
   const [values, setValues] = useState<RegistrationValues>(emptyValues);
   const [errors, setErrors] = useState<RegistrationErrors>({});
-  const [ready, setReady] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  // If the student presses Back from Paystack, make the button usable again
+  useEffect(() => {
+    function reset(e: PageTransitionEvent) {
+      if (e.persisted) setSubmitting(false);
+    }
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -58,21 +68,43 @@ export default function RegistrationForm() {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    setReady(false);
+    setSubmitError("");
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submitting) return;
+
     const found = validateRegistration(values);
     setErrors(found);
+    if (Object.keys(found).length > 0) return;
 
-    if (Object.keys(found).length > 0) {
-      setReady(false);
-      return;
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const res = await fetch("/api/paystack/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.authorizationUrl) {
+        if (data?.errors) setErrors(data.errors);
+        setSubmitError(
+          data?.error ?? "Something went wrong. Please try again.",
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      // Send the student to Paystack's secure checkout page
+      window.location.href = data.authorizationUrl;
+    } catch {
+      setSubmitError("Network problem. Check your connection and try again.");
+      setSubmitting(false);
     }
-
-    // Part 2: this is where we will start the Paystack payment.
-    setReady(true);
   }
 
   return (
@@ -121,14 +153,14 @@ export default function RegistrationForm() {
           aria-describedby={errors.skill ? "skill-error" : undefined}
           className={inputClass(Boolean(errors.skill))}
         >
-          <option value="" className="bg-page text-black text-xl font-bold">
+          <option value="" className="bg-page text-fg">
             Choose a skill
           </option>
           {skills.map((skill) => (
             <option
               key={skill.name}
               value={skill.name}
-              className="bg-page text-black"
+              className="bg-page text-fg"
             >
               {skill.name}
             </option>
@@ -144,28 +176,27 @@ export default function RegistrationForm() {
         </span>
       </div>
 
+      {submitError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400"
+        >
+          {submitError}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="w-full rounded-full bg-gold px-8 py-3 font-semibold text-ink transition hover:bg-gold-dark"
+        disabled={submitting}
+        className="w-full rounded-full bg-gold px-8 py-3 font-semibold text-ink transition hover:bg-gold-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Pay Now
+        {submitting ? "Redirecting to Paystack…" : "Pay Now"}
       </button>
 
       <p className="text-center text-xs text-fg/60">
         Secure payment by Paystack. After payment is confirmed, your Google Meet
         class link is sent to your email.
       </p>
-
-      {/* Temporary message: remove in Part 2 */}
-      {ready && (
-        <p
-          role="status"
-          className="rounded-lg border border-accent/50 bg-accent/10 p-4 text-sm text-fg"
-        >
-          ✅ Your details look good. Payment isn&apos;t connected yet.
-          We&apos;ll add Paystack in Part 2.
-        </p>
-      )}
     </form>
   );
 }
