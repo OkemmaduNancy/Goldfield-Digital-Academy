@@ -86,7 +86,7 @@ export default function Footer() {
       </div>
 
       <div data-scroll-reveal className="border-t border-gold/30 px-6 py-5 text-center text-xs text-cream/50">
-        © {new Date().getFullYear()} Goldfield Academy. All rights reserved.
+        © {new Date().getFullYear()} Goldfield Digital Academy. All rights reserved.
       </div>
     </footer>
   );
