@@ -7,7 +7,7 @@ import RegistrationForm from "@/components/RegistrationForm";
 import Student from "@/components/assets/Student.png";
 
 export const metadata: Metadata = {
-  title: "Join Goldfield Academy",
+  title: "Join Goldfield Digital Academy",
   description:
     "Register for a live class and pay the registration fee to secure your place.",
 };

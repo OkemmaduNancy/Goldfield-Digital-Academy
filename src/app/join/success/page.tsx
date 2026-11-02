@@ -9,7 +9,7 @@ import {
 } from "@/lib/paystack";
 
 export const metadata: Metadata = {
-  title: "Payment status | Goldfield Academy",
+  title: "Payment status | Goldfield Digital Academy",
   robots: { index: false, follow: false },
 };
 
