@@ -32,12 +32,5 @@ export const contactItems: ContactItem[] = [
     value: "@goldfieldgroups",
     href: "https://x.com/goldfieldgroups?s=11",
     icon: "🎵",
-    isPlaceholder: true,
-  },
-  {
-    label: "Other socials",
-    value: "More handles coming soon",
-    icon: "🔗",
-    isPlaceholder: true,
-  },
+  }
 ];
