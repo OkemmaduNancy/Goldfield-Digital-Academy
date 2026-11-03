@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { EMAIL_LOGO_BASE64 } from "@/lib/emailLogo";
 
 type ClassLinkEmail = {
   to: string;
@@ -43,20 +44,43 @@ export async function sendClassLinkEmail({
   ].join("\n");
 
   const html = `
-    <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#0a0a0a">
-      <h2 style="margin:0 0 16px">Welcome to Goldfield Digital Academy</h2>
-      <p>Hi ${escapeHtml(name)},</p>
-      <p>Thank you for registering for <strong>${escapeHtml(skill)}</strong>. Your payment has been confirmed.</p>
-      <p>Join your class group on Telegram:</p>
-      <p>
-        <a href="${escapeHtml(groupLink)}"
-           style="display:inline-block;background:#ffbd07;color:#0a0a0a;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:bold">
-          Join the Telegram group
-        </a>
-      </p>
-      <p>Your class Google Meet links will be shared inside the group, so please join as soon as you can.</p>
-      <p style="color:#666;font-size:12px">Payment reference: ${escapeHtml(reference)}</p>
-    </div>`;
+  <div style="background:#f4f4f4;padding:24px 12px;font-family:Arial,Helvetica,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+           style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden">
+      <tr>
+        <td align="center" style="background:#0a0a0a;padding:28px 24px">
+          <img src="cid:goldfield-logo" width="80" height="80" alt="Goldfield Digital Academy"
+               style="display:block;margin:0 auto 12px">
+          <div style="color:#ffbd07;font-size:20px;font-weight:bold;letter-spacing:0.5px">
+            Goldfield Digital Academy
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:28px 24px;color:#0a0a0a;font-size:15px;line-height:1.6">
+          <p style="margin:0 0 16px">Hi ${escapeHtml(name)},</p>
+          <p style="margin:0 0 16px">
+            Thank you for registering for <strong>${escapeHtml(skill)}</strong>.
+            Your payment has been confirmed.
+          </p>
+          <p style="margin:0 0 20px">Join your class group on Telegram:</p>
+          <p style="margin:0 0 24px">
+            <a href="${escapeHtml(groupLink)}"
+               style="display:inline-block;background:#ffbd07;color:#0a0a0a;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:bold">
+              Join the Telegram group
+            </a>
+          </p>
+          <p style="margin:0 0 16px">
+            Your class Google Meet links will be shared inside the group, so
+            please join as soon as you can.
+          </p>
+          <p style="margin:24px 0 0;color:#777777;font-size:12px">
+            Payment reference: ${escapeHtml(reference)}
+          </p>
+        </td>
+      </tr>
+    </table>
+  </div>`;
 
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_APP_PASSWORD;
@@ -84,5 +108,13 @@ export async function sendClassLinkEmail({
     subject,
     text,
     html,
+    attachments: [
+      {
+        filename: "goldfield-logo.png",
+        content: Buffer.from(EMAIL_LOGO_BASE64, "base64"),
+        cid: "goldfield-logo", // matches src="cid:goldfield-logo" above
+        contentType: "image/png",
+      },
+    ],
   });
 }

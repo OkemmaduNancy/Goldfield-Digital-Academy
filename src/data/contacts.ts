@@ -28,8 +28,9 @@ export const contactItems: ContactItem[] = [
     icon: "✉️",
   },
   {
-    label: "TikTok",
-    value: "TikTok handle coming soon",
+    label: "Twitter",
+    value: "@goldfieldgroups",
+    href: "https://x.com/goldfieldgroups?s=11",
     icon: "🎵",
     isPlaceholder: true,
   },
