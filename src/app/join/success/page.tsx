@@ -2,55 +2,59 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import {
-  isPaymentValid,
-  isValidReference,
-  verifyTransaction,
-} from "@/lib/paystack";
+import { fulfillPayment, type FulfillmentResult } from "@/lib/fulfillment";
+import { isValidReference } from "@/lib/paystack";
 
 export const metadata: Metadata = {
   title: "Payment status | Goldfield Digital Academy",
   robots: { index: false, follow: false },
 };
 
-type Outcome =
-  | { kind: "success"; name?: string; skill?: string }
-  | { kind: "pending" }
-  | { kind: "failed" }
-  | { kind: "error" }
-  | { kind: "missing" };
+type Outcome = FulfillmentResult | { kind: "missing" } | { kind: "error" };
 
 function first(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function maskEmail(email: string) {
+  const [user, domain] = email.split("@");
+  if (!user || !domain) return "your email";
+  return `${user[0]}***@${domain}`;
+}
+
 async function getOutcome(reference?: string): Promise<Outcome> {
   if (!reference || !isValidReference(reference)) return { kind: "missing" };
-
   try {
-    const tx = await verifyTransaction(reference);
-
-    if (tx.status === "success") {
-      if (!isPaymentValid(tx)) {
-        console.error("Payment amount or currency mismatch:", reference);
-        return { kind: "error" };
-      }
-      return {
-        kind: "success",
-        name: typeof tx.metadata?.name === "string" ? tx.metadata.name : undefined,
-        skill:
-          typeof tx.metadata?.skill === "string" ? tx.metadata.skill : undefined,
-      };
-    }
-
-    if (tx.status === "failed" || tx.status === "abandoned") {
-      return { kind: "failed" };
-    }
-    return { kind: "pending" };
+    return await fulfillPayment(reference);
   } catch (error) {
-    console.error("Payment verification failed:", error);
+    console.error("Payment check failed:", error);
     return { kind: "error" };
   }
+}
+
+const buttonClass =
+  "inline-block rounded-full bg-gold px-8 py-3 font-semibold text-ink transition hover:bg-gold-dark";
+
+function StatusCard({
+  icon,
+  title,
+  children,
+}: {
+  icon?: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      {icon && (
+        <div className="text-5xl" aria-hidden>
+          {icon}
+        </div>
+      )}
+      <h1 className="mt-5 text-3xl font-bold text-fg">{title}</h1>
+      <div className="mt-4 space-y-3 text-fg/70">{children}</div>
+    </>
+  );
 }
 
 export default async function PaymentResultPage({
@@ -65,8 +69,7 @@ export default async function PaymentResultPage({
   const reference = first(params.reference) ?? first(params.trxref);
   const outcome = await getOutcome(reference);
 
-  const buttonClass =
-    "inline-block rounded-full bg-gold px-8 py-3 font-semibold text-ink transition hover:bg-gold-dark";
+  const showReference = reference && isValidReference(reference);
 
   return (
     <>
@@ -74,85 +77,53 @@ export default async function PaymentResultPage({
       <main className="min-h-[70vh] bg-page py-16 md:py-24">
         <div className="mx-auto max-w-xl px-6 text-center">
           <div className="rounded-2xl border border-fg/10 bg-fg/5 p-8 sm:p-10">
-            {outcome.kind === "success" && (
-              <>
-                <div className="text-5xl" aria-hidden>
-                  🎉
-                </div>
-                <h1 className="mt-5 text-3xl font-bold text-fg">
-                  Payment confirmed
-                </h1>
-                <p className="mt-4 text-fg/70">
-                  Thank you{outcome.name ? `, ${outcome.name}` : ""}.
-                  {outcome.skill
-                    ? ` Your place in ${outcome.skill} is secured.`
-                    : " Your place is secured."}
+            {outcome.kind === "paid" && outcome.emailStatus === "sent" && (
+              <StatusCard icon="🎉" title="Payment confirmed">
+                <p>
+                  Thank you, {outcome.name}. Your place in {outcome.skill} is
+                  secured.
                 </p>
-                <p className="mt-3 text-fg/70">
-                  Your Google Meet class link will be sent to the email you
-                  registered with.
+                <p>
+                  We&apos;ve emailed your Telegram group link to{" "}
+                  {maskEmail(outcome.email)}. Join the group to get your class
+                  details. If it doesn&apos;t arrive in a few minutes, check
+                  your spam folder.
                 </p>
-                {/* Temporary note: remove in Part 2b */}
-                <p className="mt-5 rounded-lg border border-accent/50 bg-accent/10 p-3 text-sm text-fg">
-                  Developer note: the class-link email is added in the next
-                  step.
-                </p>
-              </>
+              </StatusCard>
             )}
 
-            {outcome.kind === "pending" && (
-              <>
-                <div className="text-5xl" aria-hidden>
-                  ⏳
-                </div>
-                <h1 className="mt-5 text-3xl font-bold text-fg">
-                  Payment still processing
-                </h1>
-                <p className="mt-4 text-fg/70">
-                  Your bank hasn&apos;t confirmed this payment yet. Please wait
-                  a minute and refresh this page.
-                </p>
-              </>
-            )}
-
-            {outcome.kind === "failed" && (
-              <>
-                <div className="text-5xl" aria-hidden>
-                  ❌
-                </div>
-                <h1 className="mt-5 text-3xl font-bold text-fg">
-                  Payment not completed
-                </h1>
-                <p className="mt-4 text-fg/70">
-                  The payment didn&apos;t go through and you haven&apos;t been
-                  charged. You can try again.
-                </p>
-                <div className="mt-8">
-                  <Link href="/join" className={buttonClass}>
-                    Try again
-                  </Link>
-                </div>
-              </>
-            )}
-
-            {outcome.kind === "error" && (
-              <>
-                <div className="text-5xl" aria-hidden>
-                  ⚠️
-                </div>
-                <h1 className="mt-5 text-3xl font-bold text-fg">
-                  We couldn&apos;t confirm your payment
-                </h1>
-                <p className="mt-4 text-fg/70">
-                  Please refresh this page in a moment. If you were charged and
-                  this keeps happening, contact us and quote your payment
-                  reference.
-                </p>
-                {reference && isValidReference(reference) && (
-                  <p className="mt-3 break-all text-sm text-fg/60">
-                    Reference: {reference}
+            {outcome.kind === "paid" &&
+              outcome.emailStatus === "in_progress" && (
+                <StatusCard icon="🎉" title="Payment confirmed">
+                  <p>
+                    Thank you, {outcome.name}. Your place in {outcome.skill} is
+                    secured.
                   </p>
-                )}
+                  <p>
+                    Your email is being sent. Refresh this page in a minute to
+                    check.
+                  </p>
+                </StatusCard>
+              )}
+
+            {outcome.kind === "paid" && outcome.emailStatus === "failed" && (
+              <>
+                <StatusCard icon="✅" title="Payment confirmed">
+                  <p>
+                    Thank you, {outcome.name}. Your place in {outcome.skill} is
+                    secured.
+                  </p>
+                  <p>
+                    We couldn&apos;t send your Telegram group link just now.
+                    Please refresh this page in a minute and we&apos;ll try
+                    again, or contact us.
+                  </p>
+                  {showReference && (
+                    <p className="break-all text-sm text-fg/60">
+                      Reference: {reference}
+                    </p>
+                  )}
+                </StatusCard>
                 <div className="mt-8">
                   <Link href="/#contact" className={buttonClass}>
                     Contact us
@@ -161,15 +132,61 @@ export default async function PaymentResultPage({
               </>
             )}
 
-            {outcome.kind === "missing" && (
-              <>
-                <h1 className="text-3xl font-bold text-fg">
-                  No payment found
-                </h1>
-                <p className="mt-4 text-fg/70">
-                  This page shows the result of a payment. To register for a
-                  class, start from the join page.
+            {outcome.kind === "not_paid" && outcome.reason === "pending" && (
+              <StatusCard icon="⏳" title="Payment still processing">
+                <p>
+                  Your bank hasn&apos;t confirmed this payment yet. Please wait
+                  a minute and refresh this page.
                 </p>
+              </StatusCard>
+            )}
+
+            {outcome.kind === "not_paid" && outcome.reason === "failed" && (
+              <>
+                <StatusCard icon="❌" title="Payment not completed">
+                  <p>
+                    The payment didn&apos;t go through and you haven&apos;t been
+                    charged. You can try again.
+                  </p>
+                </StatusCard>
+                <div className="mt-8">
+                  <Link href="/join" className={buttonClass}>
+                    Try again
+                  </Link>
+                </div>
+              </>
+            )}
+
+            {(outcome.kind === "error" || outcome.kind === "mismatch") && (
+              <>
+                <StatusCard icon="⚠️" title="We couldn't confirm your payment">
+                  <p>
+                    Please refresh this page in a moment. If you were charged
+                    and this keeps happening, contact us and quote your payment
+                    reference.
+                  </p>
+                  {showReference && (
+                    <p className="break-all text-sm text-fg/60">
+                      Reference: {reference}
+                    </p>
+                  )}
+                </StatusCard>
+                <div className="mt-8">
+                  <Link href="/#contact" className={buttonClass}>
+                    Contact us
+                  </Link>
+                </div>
+              </>
+            )}
+
+            {(outcome.kind === "missing" || outcome.kind === "ignored") && (
+              <>
+                <StatusCard title="No payment found">
+                  <p>
+                    This page shows the result of a payment. To register for a
+                    class, start from the join page.
+                  </p>
+                </StatusCard>
                 <div className="mt-8">
                   <Link href="/join" className={buttonClass}>
                     Go to registration

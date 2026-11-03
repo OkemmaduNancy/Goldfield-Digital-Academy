@@ -9,6 +9,7 @@ export type VerifiedTransaction = {
   reference: string;
   amount: number;
   currency: string;
+  customer?: { email?: string } | null;
   metadata?: { name?: unknown; skill?: unknown } | null;
 };
 
@@ -86,4 +87,8 @@ export function isPaymentValid(tx: VerifiedTransaction) {
     tx.currency === "NGN" &&
     tx.amount === REGISTRATION_FEE * 100
   );
+}
+// Only references created by our own site (see the initialize route)
+export function isOurReference(reference: string) {
+  return /^GFA-[A-Za-z0-9]{6,60}$/.test(reference);
 }

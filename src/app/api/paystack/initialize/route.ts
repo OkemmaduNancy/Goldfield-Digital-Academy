@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { REGISTRATION_FEE } from "@/lib/pricing";
 import { validateRegistration } from "@/lib/validation";
 import { initializeTransaction } from "@/lib/paystack";
+import { createPendingRegistration } from "@/lib/registrations";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,7 +22,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  // Never trust the browser: clean and re-check everything on the server
   const values = {
     name: input.name.trim(),
     email: input.email.trim().toLowerCase(),
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   if (Object.keys(errors).length > 0) {
     return NextResponse.json(
       { error: "Please check your details.", errors },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -41,19 +41,29 @@ export async function POST(request: Request) {
     console.error("SITE_URL is not set");
     return NextResponse.json(
       { error: "Payments are not available right now." },
-      { status: 500 },
+      { status: 500 }
     );
   }
+
+  const reference = `GFA-${randomUUID().replace(/-/g, "").slice(0, 20)}`;
+  const amountKobo = REGISTRATION_FEE * 100;
 
   try {
     const transaction = await initializeTransaction({
       email: values.email,
-      // The price comes from the server, never from the browser
-      amountKobo: REGISTRATION_FEE * 100,
-      reference: `GFA-${randomUUID().replace(/-/g, "").slice(0, 20)}`,
+      amountKobo,
+      reference,
       callbackUrl: `${siteUrl}/join/success`,
       metadata: { name: values.name, skill: values.skill },
     });
+
+    // Save a pending record. If this fails we carry on: the registration is
+    // recreated from Paystack's own data once the payment succeeds.
+    try {
+      await createPendingRegistration({ reference, ...values, amountKobo });
+    } catch (dbError) {
+      console.error("Could not save pending registration:", dbError);
+    }
 
     return NextResponse.json({
       authorizationUrl: transaction.authorization_url,
@@ -62,7 +72,7 @@ export async function POST(request: Request) {
     console.error("Paystack initialize failed:", error);
     return NextResponse.json(
       { error: "We couldn't start your payment. Please try again." },
-      { status: 502 },
+      { status: 502 }
     );
   }
 }
