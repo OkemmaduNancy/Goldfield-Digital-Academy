@@ -1,43 +1,54 @@
+import {
+  Bot,
+  Clapperboard,
+  FolderKanban,
+  Palette,
+  PenLine,
+  Smartphone,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
+
 export type Skill = {
   name: string;
-  icon: string;
+  icon: LucideIcon;
   description: string;
 };
 
 export const skills: Skill[] = [
   {
     name: "Content Creation",
-    icon: "✍️",
+    icon: PenLine,
     description: "Create content that engages an audience.",
   },
   {
     name: "Digital Marketing",
-    icon: "📈",
+    icon: TrendingUp,
     description: "Promote products and services online.",
   },
   {
     name: "Social Media Management",
-    icon: "📱",
+    icon: Smartphone,
     description: "Grow and manage brand pages.",
   },
   {
     name: "Video Editing",
-    icon: "🎬",
+    icon: Clapperboard,
     description: "Turn raw footage into polished videos.",
   },
   {
     name: "Graphic Design",
-    icon: "🎨",
+    icon: Palette,
     description: "Design visuals that stand out.",
   },
   {
     name: "Virtual Assistance",
-    icon: "🗂️",
+    icon: FolderKanban,
     description: "Support businesses remotely and stay organised.",
   },
   {
     name: "AI Creation and Automation",
-    icon: "🤖",
+    icon: Bot,
     description: "Use AI tools to create and automate work.",
   },
 ];

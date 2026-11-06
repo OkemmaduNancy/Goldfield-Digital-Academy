@@ -22,8 +22,8 @@ export default function Skills() {
               key={skill.name}
               className="rounded-2xl border border-gold/20 bg-white/5 p-7 transition hover:-translate-y-1 hover:border-gold/60"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-2xl">
-                {skill.icon}
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold">
+                <skill.icon className="h-6 w-6" aria-hidden />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-cream">
                 {skill.name}

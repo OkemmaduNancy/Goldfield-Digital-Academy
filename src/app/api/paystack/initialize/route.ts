@@ -3,8 +3,12 @@ import { randomUUID } from "node:crypto";
 import { REGISTRATION_FEE } from "@/lib/pricing";
 import { validateRegistration } from "@/lib/validation";
 import { initializeTransaction } from "@/lib/paystack";
-import { createPendingRegistration } from "@/lib/registrations";
-
+import { TOTAL_SPOTS } from "@/lib/capacity";
+import {
+  countPaidRegistrations,
+  createPendingRegistration,
+  isEmailRegistered,
+} from "@/lib/registrations";
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -32,8 +36,36 @@ export async function POST(request: Request) {
   if (Object.keys(errors).length > 0) {
     return NextResponse.json(
       { error: "Please check your details.", errors },
-      { status: 400 }
+      { status: 400 },
     );
+  }
+  // Block emails that have already registered and paid
+  try {
+    if (await isEmailRegistered(values.email)) {
+      return NextResponse.json(
+        {
+          error: "This email is already registered.",
+          code: "EMAIL_ALREADY_REGISTERED",
+        },
+        { status: 409 },
+      );
+    }
+  } catch (dbError) {
+    // If the check itself fails we carry on; the database rule still stops
+    // a second registration from being recorded.
+    console.error("Could not check for an existing registration:", dbError);
+  }
+
+  // Stop new payments once every spot is taken
+  try {
+    if ((await countPaidRegistrations()) >= TOTAL_SPOTS) {
+      return NextResponse.json(
+        { error: "Registration is full.", code: "REGISTRATION_FULL" },
+        { status: 409 },
+      );
+    }
+  } catch (dbError) {
+    console.error("Could not check remaining spots:", dbError);
   }
 
   const siteUrl = process.env.SITE_URL?.replace(/\/+$/, "");
@@ -41,7 +73,7 @@ export async function POST(request: Request) {
     console.error("SITE_URL is not set");
     return NextResponse.json(
       { error: "Payments are not available right now." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -72,7 +104,7 @@ export async function POST(request: Request) {
     console.error("Paystack initialize failed:", error);
     return NextResponse.json(
       { error: "We couldn't start your payment. Please try again." },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

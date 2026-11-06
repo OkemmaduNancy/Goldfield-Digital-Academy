@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 const links = [
   { label: "Home", href: "/#home" },
@@ -61,7 +62,11 @@ export default function Navbar() {
           aria-expanded={open}
           className="flex h-10 w-10 items-center justify-center rounded-md border border-gold/40 text-gold md:hidden"
         >
-          {open ? "✕" : "☰"}
+          {open ? (
+            <X className="h-5 w-5" aria-hidden />
+          ) : (
+            <Menu className="h-5 w-5" aria-hidden />
+          )}
         </button>
       </nav>
 
@@ -81,7 +86,7 @@ export default function Navbar() {
           ))}
           <li className="pt-2">
             <a
-              href="#join"
+              href="/join"
               onClick={() => setOpen(false)}
               className="block rounded-full bg-gold px-5 py-2 text-center font-semibold text-ink"
             >

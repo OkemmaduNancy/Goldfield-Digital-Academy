@@ -22,7 +22,8 @@ export type FulfillmentResult =
     }
   | { kind: "not_paid"; reason: "failed" | "pending" }
   | { kind: "mismatch" }
-  | { kind: "ignored" };
+  | { kind: "ignored" }
+  | { kind: "duplicate" };
 
 export async function fulfillPayment(
   reference: string,
@@ -62,6 +63,10 @@ export async function fulfillPayment(
     skill,
     amountKobo: tx.amount,
   });
+    if (registration.status === "duplicate") {
+    console.error("Duplicate payment for an already registered email:", reference);
+    return { kind: "duplicate" };
+  }
 
   const claimed = await claimEmailSend(reference);
 

@@ -1,16 +1,18 @@
+import { Video, Wrench, Zap } from "lucide-react";
+
 const highlights = [
   {
-    icon: "🎥",
+    icon: Video,
     title: "Live online classes",
     text: "Learn in real time on Google Meet, with a tutor you can ask questions.",
   },
   {
-    icon: "🛠️",
+    icon: Wrench,
     title: "Practical skills",
     text: "Focus on skills you can use right away, not just theory.",
   },
   {
-    icon: "⚡",
+    icon: Zap,
     title: "Simple registration",
     text: "Choose your skill, pay securely, and receive your class link by email.",
   },
@@ -41,8 +43,8 @@ export default function About() {
               key={item.title}
               className="rounded-2xl border border-ink/10 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-xl">
-                {item.icon}
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-gold">
+                <item.icon className="h-6 w-6" aria-hidden />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-ink">
                 {item.title}

@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  BadgeCheck,
+  CircleCheck,
+  CircleQuestionMark,
+  CircleX,
+  Clock,
+  Info,
+  type LucideIcon,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { fulfillPayment, type FulfillmentResult } from "@/lib/fulfillment";
@@ -40,15 +49,17 @@ function StatusCard({
   title,
   children,
 }: {
-  icon?: string;
+  icon?: LucideIcon;
   title: string;
   children: React.ReactNode;
 }) {
+  const Icon = icon;
+
   return (
     <>
-      {icon && (
-        <div className="text-5xl" aria-hidden>
-          {icon}
+      {Icon && (
+        <div className="flex justify-center text-accent" aria-hidden>
+          <Icon className="h-12 w-12" strokeWidth={1.7} />
         </div>
       )}
       <h1 className="mt-5 text-3xl font-bold text-fg">{title}</h1>
@@ -78,7 +89,7 @@ export default async function PaymentResultPage({
         <div className="mx-auto max-w-xl px-6 text-center">
           <div className="rounded-2xl border border-fg/10 bg-fg/5 p-8 sm:p-10">
             {outcome.kind === "paid" && outcome.emailStatus === "sent" && (
-              <StatusCard icon="🎉" title="Payment confirmed">
+              <StatusCard icon={BadgeCheck} title="Payment confirmed">
                 <p>
                   Thank you, {outcome.name}. Your place in {outcome.skill} is
                   secured.
@@ -94,7 +105,7 @@ export default async function PaymentResultPage({
 
             {outcome.kind === "paid" &&
               outcome.emailStatus === "in_progress" && (
-                <StatusCard icon="🎉" title="Payment confirmed">
+                <StatusCard icon={BadgeCheck} title="Payment confirmed">
                   <p>
                     Thank you, {outcome.name}. Your place in {outcome.skill} is
                     secured.
@@ -108,7 +119,7 @@ export default async function PaymentResultPage({
 
             {outcome.kind === "paid" && outcome.emailStatus === "failed" && (
               <>
-                <StatusCard icon="✅" title="Payment confirmed">
+                <StatusCard icon={CircleCheck} title="Payment confirmed">
                   <p>
                     Thank you, {outcome.name}. Your place in {outcome.skill} is
                     secured.
@@ -133,7 +144,7 @@ export default async function PaymentResultPage({
             )}
 
             {outcome.kind === "not_paid" && outcome.reason === "pending" && (
-              <StatusCard icon="⏳" title="Payment still processing">
+              <StatusCard icon={Clock} title="Payment still processing">
                 <p>
                   Your bank hasn&apos;t confirmed this payment yet. Please wait
                   a minute and refresh this page.
@@ -143,7 +154,7 @@ export default async function PaymentResultPage({
 
             {outcome.kind === "not_paid" && outcome.reason === "failed" && (
               <>
-                <StatusCard icon="❌" title="Payment not completed">
+                <StatusCard icon={CircleX} title="Payment not completed">
                   <p>
                     The payment didn&apos;t go through and you haven&apos;t been
                     charged. You can try again.
@@ -157,9 +168,35 @@ export default async function PaymentResultPage({
               </>
             )}
 
+            {outcome.kind === "duplicate" && (
+              <>
+                <StatusCard icon={Info} title="This email is already registered">
+                  <p>
+                    This email address already has a place at Goldfield Digital Academy,
+                    so this payment wasn&apos;t registered as a second place.
+                    Please contact us with the reference below so we can sort it
+                    out.
+                  </p>
+                  {showReference && (
+                    <p className="break-all text-sm text-fg/60">
+                      Reference: {reference}
+                    </p>
+                  )}
+                </StatusCard>
+                <div className="mt-8">
+                  <Link href="/#contact" className={buttonClass}>
+                    Contact us
+                  </Link>
+                </div>
+              </>
+            )}
+
             {(outcome.kind === "error" || outcome.kind === "mismatch") && (
               <>
-                <StatusCard icon="⚠️" title="We couldn't confirm your payment">
+                <StatusCard
+                  icon={CircleQuestionMark}
+                  title="We couldn't confirm your payment"
+                >
                   <p>
                     Please refresh this page in a moment. If you were charged
                     and this keeps happening, contact us and quote your payment

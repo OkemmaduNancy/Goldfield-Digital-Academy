@@ -52,6 +52,7 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<RegistrationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [setShowDuplicate] = useState(false);
 
   // If the student presses Back from Paystack, make the button usable again
   useEffect(() => {
@@ -89,6 +90,15 @@ export default function RegistrationForm() {
         body: JSON.stringify(values),
       });
       const data = await res.json().catch(() => null);
+
+      if (res.status === 409 && data?.code === "EMAIL_ALREADY_REGISTERED") {
+        setErrors((prev) => ({
+          ...prev,
+          email: "This email is already registered.",
+        }));
+        setSubmitting(false);
+        return;
+      }
 
       if (!res.ok || !data?.authorizationUrl) {
         if (data?.errors) setErrors(data.errors);
@@ -194,8 +204,7 @@ export default function RegistrationForm() {
       </button>
 
       <p className="text-center text-xs text-fg/60">
-        Secure payment by Paystack. After payment is confirmed, your Google Meet
-        class link is sent to your email.
+        Secure payment by Paystack. After payment is confirmed, the Telegram link will be sent to your email.
       </p>
     </form>
   );

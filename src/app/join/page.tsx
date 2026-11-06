@@ -24,7 +24,7 @@ export default function JoinPage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[35%_15%] opacity-100"
+          className="object-cover object-[35%_15%] opacity-50"
         />
         <div
           aria-hidden="true"
