@@ -3,11 +3,11 @@ import Link from "next/link";
 import { contactItems } from "@/data/contacts";
 
 const quickLinks = [
-  { label: "Home", href: "/home" },
-  { label: "About", href: "/about" },
-  { label: "Skills", href: "/skills" },
-  { label: "Reviews", href: "/reviews" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: "/#home" },
+  { label: "About", href: "/#about" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Reviews", href: "/#reviews" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Footer() {
@@ -85,8 +85,12 @@ export default function Footer() {
         </div>
       </div>
 
-      <div data-scroll-reveal className="border-t border-gold/30 px-6 py-5 text-center text-xs text-cream/50">
-        © {new Date().getFullYear()} Goldfield Digital Academy. All rights reserved.
+      <div
+        data-scroll-reveal
+        className="border-t border-gold/30 px-6 py-5 text-center text-xs text-cream/50"
+      >
+        © {new Date().getFullYear()} Goldfield Digital Academy. All rights
+        reserved.
       </div>
     </footer>
   );
